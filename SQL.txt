@@ -1,0 +1,168 @@
+--DDL
+
+--aluno
+CREATE TABLE filipe.aluno (
+	id serial NOT NULL,
+	pessoa serial NOT NULL,
+	CONSTRAINT pk_aluno PRIMARY KEY (id)
+);
+
+ALTER TABLE filipe.aluno ADD CONSTRAINT fk_pessoa FOREIGN KEY (pessoa) REFERENCES filipe.pessoa(id);
+
+--campus
+CREATE TABLE filipe.campus (
+	id serial NOT NULL,
+	nome varchar(255) NOT NULL,
+	cep varchar NOT NULL,
+	CONSTRAINT pk_campus PRIMARY KEY (id)
+);
+
+--disciplina
+CREATE TABLE filipe.disciplina (
+	id serial NOT NULL,
+	nome varchar(255) NOT NULL,
+	ementa varchar NULL,
+	CONSTRAINT pk_disciplina PRIMARY KEY (id)
+);
+
+--horario
+CREATE TABLE filipe.horario (
+	id serial NOT NULL,
+	turma serial NOT NULL,
+	sala serial NOT NULL,
+	inicio timestamp NOT NULL,
+	fim timestamp NOT NULL,
+	CONSTRAINT pk_horario PRIMARY KEY (id)
+);
+
+ALTER TABLE filipe.horario ADD CONSTRAINT fk_sala FOREIGN KEY (sala) REFERENCES filipe.sala(id);
+ALTER TABLE filipe.horario ADD CONSTRAINT fk_turma FOREIGN KEY (turma) REFERENCES filipe.turma(id);
+
+--matricula
+CREATE TABLE filipe.matricula (
+	id serial NOT NULL,
+	turma serial NOT NULL,
+	aluno serial NOT NULL,
+	"data" date NOT NULL,
+	CONSTRAINT pk_matricula PRIMARY KEY (id)
+);
+
+ALTER TABLE filipe.matricula ADD CONSTRAINT fk_aluno FOREIGN KEY (aluno) REFERENCES filipe.aluno(id);
+ALTER TABLE filipe.matricula ADD CONSTRAINT fk_turma FOREIGN KEY (turma) REFERENCES filipe.turma(id);
+
+--pessoa
+CREATE TABLE filipe.pessoa (
+	id serial NOT NULL,
+	nome varchar(255) NOT NULL,
+	telefone varchar(255) NULL,
+	data_nascimento date NOT NULL,
+	cpf varchar(13) NOT NULL,
+	cep varchar(12) NOT NULL,
+	rg varchar(15) NOT NULL,
+	email varchar(255) NULL,
+	CONSTRAINT pk_pessoa PRIMARY KEY (id)
+);
+
+--professor
+CREATE TABLE filipe.professor (
+	id serial NOT NULL,
+	pessoa serial NOT NULL,
+	admissao date NOT NULL,
+	titulacao varchar NOT NULL,
+	demissao date NULL,
+	CONSTRAINT pk_professor PRIMARY KEY (id)
+);
+
+ALTER TABLE filipe.professor ADD CONSTRAINT fk_pessoa FOREIGN KEY (pessoa) REFERENCES filipe.pessoa(id);
+
+--sala
+CREATE TABLE filipe.sala (
+	id serial NOT NULL,
+	nome varchar(255) NOT NULL,
+	campus serial NOT NULL,
+	CONSTRAINT pk_sala PRIMARY KEY (id)
+);
+
+ALTER TABLE filipe.sala ADD CONSTRAINT fk_campus FOREIGN KEY (campus) REFERENCES filipe.campus(id);
+
+--turma
+CREATE TABLE filipe.turma (
+	id serial NOT NULL,
+	disciplina serial NOT NULL,
+	CONSTRAINT pk_turma PRIMARY KEY (id)
+);
+
+ALTER TABLE filipe.turma ADD CONSTRAINT fk_disciplina FOREIGN KEY (disciplina) REFERENCES filipe.disciplina(id);
+
+--turma_professor
+CREATE TABLE filipe.turma_professor (
+	id serial NOT NULL,
+	turma serial NOT NULL,
+	professor serial NOT NULL,
+	CONSTRAINT pk_turma_professor PRIMARY KEY (id)
+);
+
+ALTER TABLE filipe.turma_professor ADD CONSTRAINT fk_professor FOREIGN KEY (professor) REFERENCES filipe.professor(id);
+ALTER TABLE filipe.turma_professor ADD CONSTRAINT fk_turma FOREIGN KEY (turma) REFERENCES filipe.turma(id);
+
+--DML
+insert into pessoa (name, telefone, data_nascimento, cpf, cep, rg, email) values ('Filipe', '111111111', '13/10/1987', '1111111111', '11111-111', '112121212', 'filipe@gmail.com');
+insert into pessoa (name, telefone, data_nascimento, cpf, cep, rg, email) values ('Mauro', '22222222', '13/10/1980', '222222222', '222-2222', '3333333', 'mauro@gmail.com');
+insert into pessoa (name, telefone, data_nascimento, cpf, cep, rg, email) values ('Fernando', '333333333333', '13/10/1979', '333333333', '333333-33333', '444444444', 'capin@gmail.com');
+insert into pessoa (name, telefone, data_nascimento, cpf, cep, rg, email) values ('Julio', '4444444444444', '13/10/1980', '44444444', '44444-4444', '5555555555', 'julio@gmail.com');
+insert into pessoa (name, telefone, data_nascimento, cpf, cep, rg, email) values ('Sabrina', '66666666666666', '13/10/1985', '66666666', '222-2222', '3333333', 'sabrina@gmail.com');
+
+insert into aluno (pessoa) values (1);
+insert into aluno (pessoa) values (2);
+insert into aluno (pessoa) values (5);
+
+insert into professor (pessoa, admissao, titulacao) values (3, '2020-2-20', 'Mestrado');
+insert into professor (pessoa, admissao, titulacao) values (4, '2019-10-20', 'Doutorado');
+
+insert into disciplina (nome, ementa) values ('Recuperação de Informações', 'Recuperação de Informações');
+insert into disciplina (nome, ementa) values ('Banco de dados relacional', 'Banco de dados relacional');
+
+insert into campus (nome, cep) values ('Campus I', '89030-903');
+
+insert into sala (nome, campus) values ('S-409', 1);
+insert into sala (nome, campus) values ('S-401', 1);
+
+insert into turma (disciplina) values (1);
+insert into turma (disciplina) values (2);
+
+insert into horario (turma, sala, inicio, fim) values (1, 1, '2020-02-08 8:00:00', '2020-02-08 17:00:00');
+insert into horario (turma, sala, inicio, fim) values (1, 1, '2020-02-15 8:00:00', '2020-02-15 17:00:00');
+insert into horario (turma, sala, inicio, fim) values (2, 2, '2020-02-28 18:30:00', '2020-02-08 22:00:00');
+insert into horario (turma, sala, inicio, fim) values (2, 2, '2020-02-29 8:00:00', '2020-02-29 17:00:00');
+
+insert into turma_professor (turma, professor) values (1,3);
+insert into turma_professor (turma, professor) values (2,2);
+
+insert into matricula (turma, aluno, data) values (1, 1, '2019-10-15 8:00:00');
+insert into matricula (turma, aluno, data) values (1, 2, '2019-10-20 8:00:00');
+insert into matricula (turma, aluno, data) values (2, 1, '2019-10-15 8:00:00');
+insert into matricula (turma, aluno, data) values (2, 2, '2019-10-20 8:00:00');
+
+--Selects
+
+--1
+select distinct(a.id), p.nome from aluno a
+join pessoa p on p.id = a.pessoa 
+join matricula m on a.id = m.aluno 
+join turma t on t.id = m.turma 
+join horario h on h.turma = t.id
+join sala s on s.id = h.sala 
+join campus c on c.id = s.campus
+where c.nome = 'Campus I' and NOW() between h.inicio and h.fim;
+
+--2
+select distinct(a.id), p.nome from aluno a
+join pessoa p on p.id = a.pessoa 
+join matricula m on a.id = m.aluno 
+
+--3
+select distinct(p.id), pe.nome, d.nome from professor p
+join pessoa pe on pe.id = p.pessoa
+join turma_professor tp on p.id = tp.professor 
+join turma t on t.id = tp.turma
+join disciplina d on d.id = t.disciplina;
